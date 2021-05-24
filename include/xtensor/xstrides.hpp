@@ -184,7 +184,6 @@ namespace xt
                 return shape[i] * strides[i];
             }
         }
-        XTENSOR_THROW(std::runtime_error, "illegal strides");
         return 0;
     }
 

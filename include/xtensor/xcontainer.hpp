@@ -1002,7 +1002,7 @@ namespace xt
         resize_container(m_backstrides, m_strides.size());
         adapt_strides(m_shape, m_strides, m_backstrides);
         m_layout = layout_type::dynamic;
-        detail::resize_data_container(this->storage(), compute_size(m_shape));
+        detail::resize_data_container(this->storage(), compute_size(m_shape, m_strides));
     }
 
     /**

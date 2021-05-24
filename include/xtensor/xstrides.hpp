@@ -28,6 +28,8 @@ namespace xt
     template <class shape_type>
     std::size_t compute_size(const shape_type& shape) noexcept;
 
+    template <class shape_type, class strides_type>
+    std::size_t compute_size(const shape_type& shape, const strides_type& strides) noexcept;
     /***************
      * data offset *
      ***************/
@@ -165,6 +167,25 @@ namespace xt
     inline std::size_t compute_size(const shape_type& shape) noexcept
     {
         return detail::compute_size_impl(shape, xtl::is_signed<std::decay_t<typename std::decay_t<shape_type>::value_type>>());
+    }
+
+    template <class shape_type, class strides_type>
+    inline std::size_t compute_size(const shape_type& shape, const strides_type& strides) noexcept
+    {
+        std::vector<size_t> index(shape.size());
+        std::iota(index.begin(), index.end(), 0);
+        std::sort(index.begin(), index.end(), [&](size_t& a, size_t& b) {
+            return (shape[a] == 1 ? 0 : strides[a]) > (shape[b] == 1 ? 0 : strides[b]);
+            });
+        for (auto i : index)
+        {
+            if (strides[i] != 0)
+            {
+                return shape[i] * strides[i];
+            }
+        }
+        XTENSOR_THROW(std::runtime_error, "illegal strides");
+        return 0;
     }
 
     namespace detail
